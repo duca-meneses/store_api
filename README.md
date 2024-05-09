@@ -29,7 +29,7 @@ A imagem abaixo mostra como funciona o ciclo do TDD.
 
 ![tdd](docs/imgs/tdd.png)
 
-para saber mais sobre o TDD acesse os link na sessão de <a id="referencias">referencias</a>
+para saber mais sobre o TDD acesse os link na sessão de <a href="#referencias">Referencias</a>
 
 <h2 id="started">🚀 Como começar</h2>
 

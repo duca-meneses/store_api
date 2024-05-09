@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from typing import Annotated
 import uuid
 
 from pydantic import UUID4, BaseModel, Field
@@ -11,5 +10,5 @@ def datetime_now() -> datetime:
 
 class BaseSchemaMixin(BaseModel):
     id: UUID4 = Field(default_factory=uuid.uuid4)
-    created_at: Annotated[datetime, Field(default_factory=datetime_now)]
-    updated_at: Annotated[datetime, Field(default_factory=datetime_now)]
+    created_at: datetime = Field(default_factory=datetime_now)
+    updated_at: datetime = Field(default_factory=datetime_now)

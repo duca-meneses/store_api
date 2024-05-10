@@ -25,7 +25,7 @@ async def get(
     try:
         return await usecase.get(id=id)
     except NotFoundException as exc:
-        raise HTTPException(status_code=exc.status_code, detail=exc.message)
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=exc.message)
 
 
 @router.get(path="/", summary="Lista todos os produtos", status_code=status.HTTP_200_OK)

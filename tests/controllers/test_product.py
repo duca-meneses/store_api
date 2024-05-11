@@ -9,15 +9,13 @@ async def test_controller_create_should_return_success(client, products_url):
     response = await client.post(products_url, json=product_data())
 
     content = response.json()
-    id = content["id"]
-    created_at = content["created_at"]
-    updated_at = content["updated_at"]
+
+    del content["created_at"]
+    del content["updated_at"]
+    del content["id"]
 
     assert response.status_code == status.HTTP_201_CREATED
     assert content == {
-        "id": id,
-        "created_at": created_at,
-        "updated_at": updated_at,
         "name": "Iphone 14 pro Max",
         "quantity": 10,
         "price": "8.500",
@@ -25,18 +23,53 @@ async def test_controller_create_should_return_success(client, products_url):
     }
 
 
+async def test_controller_create_should_return_unprocessable_entity(
+    client, products_url
+):
+    response = await client.post(products_url, json={})
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.json() == {
+        "detail": [
+            {
+                "type": "missing",
+                "loc": ["body", "name"],
+                "msg": "Field required",
+                "input": {},
+            },
+            {
+                "type": "missing",
+                "loc": ["body", "quantity"],
+                "msg": "Field required",
+                "input": {},
+            },
+            {
+                "type": "missing",
+                "loc": ["body", "price"],
+                "msg": "Field required",
+                "input": {},
+            },
+            {
+                "type": "missing",
+                "loc": ["body", "status"],
+                "msg": "Field required",
+                "input": {},
+            },
+        ]
+    }
+
+
 async def test_controller_get_should_return_success(
     client, products_url, product_inserted
 ):
     response = await client.get(f"{products_url}{product_inserted.id}")
-    created_at = response.json()["created_at"]
-    updated_at = response.json()["updated_at"]
+    content = response.json()
+
+    del content["created_at"]
+    del content["updated_at"]
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {
+    assert content == {
         "id": str(product_inserted.id),
-        "created_at": created_at,
-        "updated_at": updated_at,
         "name": "Iphone 14 pro Max",
         "quantity": 10,
         "price": "8.500",

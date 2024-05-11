@@ -1,5 +1,5 @@
-from typing import List
-from fastapi import APIRouter, Body, Depends, HTTPException, Path, status
+from typing import List, Optional
+from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query, status
 from pydantic import UUID4
 
 from store.core.exceptions import BadRequestException, NotFoundException
@@ -33,8 +33,15 @@ async def get(
 
 
 @router.get(path="/", summary="Lista todos os produtos", status_code=status.HTTP_200_OK)
-async def query(usecase: ProductUsecase = Depends()) -> List[ProductOut]:
-    return await usecase.query()
+async def query(
+    usecase: ProductUsecase = Depends(),
+    price_min: Optional[float] = Query(None),
+    price_max: Optional[float] = Query(None),
+) -> List[ProductOut]:
+    filter = {}
+    if price_min is not None and price_max is not None:
+        filter = {"price": {"$gt": price_min, "$lt": price_max}}
+    return await usecase.query(filter)
 
 
 @router.patch(

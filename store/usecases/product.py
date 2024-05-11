@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 import pymongo
@@ -32,8 +32,10 @@ class ProductUsecase:
 
         return ProductOut(**result)
 
-    async def query(self) -> List[ProductOut]:
-        return [ProductOut(**item) async for item in self.collection.find()]
+    async def query(self, filter: Optional[dict] = None) -> List[ProductOut]:
+        if filter is None:
+            filter = {}
+        return [ProductOut(**item) async for item in self.collection.find(filter)]
 
     async def update(self, id: UUID, body: ProductUpdate) -> ProductUpdateOut:
         update_body = body.model_dump(exclude_none=True)

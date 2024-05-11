@@ -1,7 +1,13 @@
 from datetime import datetime
 from decimal import Decimal
+from typing import Optional
 from bson import Decimal128
-from pydantic import UUID4, BaseModel, Field, model_validator
+from pydantic import (
+    UUID4,
+    BaseModel,
+    Field,
+    model_validator,
+)
 
 
 class BaseSchemaMixin(BaseModel):
@@ -11,8 +17,8 @@ class BaseSchemaMixin(BaseModel):
 
 class OutMixin(BaseModel):
     id: UUID4 = Field()
-    created_at: datetime = Field()
-    updated_at: datetime = Field()
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     @model_validator(mode="before")
     def set_schema(cls, data):

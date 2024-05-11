@@ -3,8 +3,9 @@ from uuid import UUID
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 import pymongo
 
-from store.core.exceptions import NotFoundException
+from store.core.exceptions import BadRequestException, NotFoundException
 from store.db.mongo import db_client
+from store.models.base import datetime_now
 from store.models.product import ProductModel
 from store.schemas.product import ProductIn, ProductOut, ProductUpdate, ProductUpdateOut
 
@@ -17,6 +18,8 @@ class ProductUsecase:
 
     async def create(self, body: ProductIn) -> ProductOut:
         product_model = ProductModel(**body.model_dump())
+        product_model.created_at = datetime_now()
+        product_model.updated_at = datetime_now()
         await self.collection.insert_one(product_model.model_dump())
 
         return ProductOut(**product_model.model_dump())
@@ -33,11 +36,15 @@ class ProductUsecase:
         return [ProductOut(**item) async for item in self.collection.find()]
 
     async def update(self, id: UUID, body: ProductUpdate) -> ProductUpdateOut:
+        update_body = body.model_dump(exclude_none=True)
+        update_body["updated_at"] = datetime_now()
         result = await self.collection.find_one_and_update(
             filter={"id": id},
-            update={"$set": body.model_dump(exclude_none=True)},
+            update={"$set": update_body},
             return_document=pymongo.ReturnDocument.AFTER,
         )
+        if not result:
+            raise BadRequestException(message=f"Product not found with filter: ID={id}")
 
         return ProductUpdateOut(**result)
 

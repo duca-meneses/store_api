@@ -8,3 +8,7 @@ class BaseException(Exception):
 
 class NotFoundException(BaseException):
     message = "Not found"
+
+
+class BadRequestException(BaseException):
+    message = "Bad request"

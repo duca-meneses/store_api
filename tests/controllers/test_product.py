@@ -118,6 +118,20 @@ async def test_controller_update_should_return_success(
     }
 
 
+async def test_controller_update_should_return_success_with_created_and_updated_diff(
+    client, products_url, product_inserted
+):
+    response = await client.patch(
+        f"{products_url}{product_inserted.id}", json={"quantity": 30}
+    )
+
+    content = response.json()
+    created_at = content["created_at"]
+    updated_at = content["updated_at"]
+    assert response.status_code == status.HTTP_200_OK
+    assert created_at != updated_at
+
+
 async def test_controller_delete_should_return_success(
     client, products_url, product_inserted
 ):
